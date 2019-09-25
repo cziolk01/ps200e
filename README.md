@@ -27,7 +27,13 @@ The first order of business is to make sure you have `R` and `RStudio` up and ru
 
 ### Install `RStudio`
 
-Go [here](https://rstudio.com/products/rstudio/download/) and get the right installer for your platform. Run the downloaded installer, following the instructions. 
+Go [here](https://rstudio.com/products/rstudio/download/) and get the right installer for your platform. Run the downloaded installer, following the instructions. Open `RStudio` and make sure everything seems kosher. In the `console` type something like 
+
+```
+rnorm(5)
+```
+
+to confirm that things are probably as they should be. 
 
 ## Install some packages
 
