@@ -8,4 +8,7 @@ Here I've gathered a few things together for our `R` review session. Please have
 Installing `R`/`RStudio`
 =============
 
-The first order of business is to make sure you have `R` and `RStudio` up and running. 
+The first order of business is to make sure you have `R` and `RStudio` up and running. If you do not have these set up, do the following, in order.
+1. Install `R`.
+2. Install `RStudio`.
+
