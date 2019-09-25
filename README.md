@@ -24,3 +24,15 @@ The first order of business is to make sure you have `R` and `RStudio` up and ru
 **For Linux:**
 1. For a complete `R` system installation, try [this](https://cran.r-project.org/bin/linux/ubuntu/README).
 2. For Ubuntu with Apt-get installed, execute _sudo apt-get install r-base_ in terminal.
+
+### Install `RStudio`
+
+Go [here](https://rstudio.com/products/rstudio/download/) and get the right installer for your platform. Run the downloaded installer, following the instructions. 
+
+## Install some packages
+
+There are a few different packages that will show up in the review session. I suggest you install them before then. Priority should be given to `tidyverse`.
+
+```
+install.packages('tidyverse')
+```
