@@ -15,5 +15,12 @@ The first order of business is to make sure you have `R` and `RStudio` up and ru
 
 **For Windows:** 
 1. Download the binary setup file for `R` [here](https://cran.r-project.org/bin/windows/base/).
-2. Open the downloaded .exe file and Install `R`.
+2. Open the downloaded `.exe` file and Install `R`.
 
+**For Mac:** 
+1. Download the appropriate version of `.pkg` file [here](https://cran.r-project.org/bin/macosx/).
+2. Open the downloaded `.pkg` file and Install `R`.
+
+**For Linux:**
+1. For a complete `R` system installation, try [this](https://cran.r-project.org/bin/linux/ubuntu/README).
+2. For Ubuntu with Apt-get installed, execute _sudo apt-get install r-base_ in terminal.
