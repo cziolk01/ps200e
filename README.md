@@ -12,3 +12,9 @@ The first order of business is to make sure you have `R` and `RStudio` up and ru
 1. Install `R`.
 2. Install `RStudio`.
 
+-- **Install `R`**
+
+**For Windows:** 
+1. Download the binary setup file for `R` [here](https://cran.r-project.org/bin/windows/base/).
+2. Open the downloaded .exe file and Install `R`.
+
