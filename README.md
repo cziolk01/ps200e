@@ -27,7 +27,7 @@ The first order of business is to make sure you have `R` and `RStudio` up and ru
 
 ### Install `RStudio`
 
-Go [here](https://rstudio.com/products/rstudio/download/) and get the right installer for your platform. Run the downloaded installer, following the instructions. Open `RStudio` and make sure everything seems kosher. In the `console` type something like 
+Go [here](https://rstudio.com/products/rstudio/download/) and get the right installer for your platform. Run the downloaded installer, following the instructions. Open `RStudio` and make sure everything seems kosher. In the `Console` type something like 
 
 ```
 rnorm(5)
@@ -37,8 +37,32 @@ to confirm that things are probably as they should be.
 
 ## Install some packages
 
-There are a few different packages that will show up in the review session. I suggest you install them before then. Priority should be given to `tidyverse`.
+There are a few different packages that will show up in the review session. I suggest you install them ahead of time. Priority should be given to `tidyverse`.
 
 ```
 install.packages('tidyverse')
+```
+
+You may also need to install `haven`. In addition, I will go over `pivot_wider()`, which is in the development version of `tidyr`. If you'd like to try this updated version of `spread()` tomorrow, install the development version using the code below.
+
+```
+install.packages('haven')
+install.packages("remotes")
+remotes::install_github("tidyverse/tidyr") 
+```
+
+We will briefly use `estimatr` tomorrow. We will use this package a lot in the future. I found that the behavior of the latest version was ideal, which can be installed with the following code. 
+
+```
+install.packages("estimatr", dependencies = TRUE,
+                 repos = c("http://r.declaredesign.org", 
+                           "https://cloud.r-project.org"))
+```
+
+Likewise, all the following packages will make an appearance.
+
+```
+install.packages('gapminder')
+install.packages('broom')
+install.packages('magrittr')
 ```
