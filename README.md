@@ -75,4 +75,4 @@ install.packages('magrittr')
 ```
 ## Using Projects
 
-Lastly, we're going to use `Projects` in `RStudio`. Have a look at [this](https://r4ds.had.co.nz/workflow-projects.html) to get an idea for what `Projects` do and how to use them. Tomorrow, when we start, we will open a new project with its own directory--you will need to pay attention to where exactly you put this directory. I will have a `.Rmd` that you can then move into the project directory. From there, it will be smooth sailing :sailboat:.
+Lastly, we're going to use `Projects` in `RStudio`. Have a look at [this](https://r4ds.had.co.nz/workflow-projects.html) to get an idea for what `Projects` do and how to use them. Tomorrow, when we start, we will open a new project with its own directory--you will need to pay attention to where exactly you put this directory. I have a `.Rmd`--[here](https://raw.githubusercontent.com/cziolk01/ps200e/master/r_review_200e.Rmd)--that you can then move into the project directory. From there, it will be smooth sailing :sailboat:.
