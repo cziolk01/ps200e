@@ -43,10 +43,17 @@ There are a few different packages that will show up in the review session. I su
 install.packages('tidyverse')
 ```
 
-You may also need to install `haven`. In addition, I will go over `pivot_wider()`, which is in the development version of `tidyr`. If you'd like to try this updated version of `spread()` tomorrow, install the development version using the code below.
+You may also need to install `haven`. 
 
 ```
 install.packages('haven')
+```
+
+In addition, I will go over `pivot_wider()`, which is in the development version of `tidyr`. If you'd like to try this updated version of `spread()` tomorrow, install the development version using the code below. 
+
+*Note:* If you use a mac and choose to try the following code, you may encounter a dialog box that tells you to "install build tools" and then takes you to this [site](https://www.cnet.com/how-to/install-command-line-developer-tools-in-os-x/). If that happens, this [other site](http://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x/) can walk you through that.
+
+```
 install.packages("remotes")
 remotes::install_github("tidyverse/tidyr") 
 ```
