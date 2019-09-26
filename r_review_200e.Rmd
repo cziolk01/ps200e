@@ -1,0 +1,776 @@
+---
+title: "R review"
+author: "Caleb Ziolkowski"
+date: \today
+output: pdf_document
+editor_options: 
+  chunk_output_type: console
+---
+
+Overview: today we'll try to get everyone up to speed on `R`. 
+
+Be ready to work through stuff on your own. You'll need to open this .Rmd in RStudio. 
+
+I borrowed and adapted a lot from Tyler Reny `http://tylerreny.github.io/teaching/`, who, in turn, borrowed and adapted a lot from Jenny Bryan at UBC `https://stat545-ubc.github.io/index.html` Ista Zah `http://tutorials.iq.harvard.edu/R/` at Harvard, and Matloff's `Art of R Programming.` There are millions of resources now online that you can use. Everyone will teach you a different approach.
+
+Before we get started, did everyone install R and RStudio?
+
+- Rstudio (https://www.rstudio.com/products/rstudio/download2/)
+
+- R (https://www.r-project.org/)
+
+Text and code chunks: 
+
+```{r sample-code}
+# sample code > note the commenting 
+a <- 2 + 5
+a
+```
+
+---------
+# To Begin
+---------
+
+- We'll focus on using `R` the Hadley Wickam/Tidyverse way. There are many ways to do things in `R`, but in this class we'll be pushing the `Tidyverse`. 
+
+- I'm still learning `R`, too. If I'm doing something that doesn't make sense to you, it may well be that it's not the best way to do it. Feel free to ask about anything 
+
+-----------------
+# Reading in Data
+-----------------
+
+- There are lots of ways to do this. Here we're going to be using the `Project` feature in RStudio. This means we will have a dedicated directory where all our associated files are stored. All our output will go to this file.  
+
+- First thing I tend to do is make sure I know what my working directory is. We're using a project, so it should be pretty straight-forward. 
+
+```{r check-wd}
+# See what your current working directory is
+getwd()
+
+# List files in your current working directory
+list.files()
+```
+
+- Normally, you can write out the whole path for reading or writing files, or just add the file name if it is or should be in your working directory. Projects will automatically put your output in your project folder.
+
+```{r example-of-writing}
+# For example
+save(a, file = 'a_file.Rda')
+library(tidyverse)
+write_csv(tibble(x = rnorm(10), y = rnorm(10)),
+          path = 'xy_out.csv')
+
+# Check if they're there
+list.files()
+```
+
+Usual steps to read in data:
+
+1) Get the data and figure out what format it is in (txt, spss, dta, csv).
+
+2) Find/create a folder for the data and save it there.
+
+3) Find the codebook. Data will be largely useless without a codebook.
+
+4) Open a new `R`-script or make a dedictated `R` chunk in a .Rmd.
+
+5) Write `R` code for cleaning the data and save the file in the folder with the data.
+
+6) Read in the data.
+
+Today, we will abridge this process. We will use URLs and packages to import the data we'll use.
+
+```{r load-dta}
+# If you are using an R script, have an evocative heading like below
+
+###########
+# Data Analysis Project X
+# This script takes all of the raw data from survey Y, cleans it
+# and saves it as a csv 
+###########
+
+#clear workspace
+rm(list = ls()) #remove everything in working memory
+
+#load packages
+library(haven) # go ahead and install if you need to
+# If you're using a .Rmd, loading all packages you'll use in the document
+# up front is good practice
+
+# read in data--using 'haven'--from this URL. 
+df <- read_dta("https://github.com/cziolk01/ps200e/blob/master/anes_pilot_2016.dta?raw=true")
+
+# one benefit of readr/haven is you get a tibble
+df
+
+# better for printing than, say, a data.frame
+as.data.frame(df)
+
+# another good tidyverse way to look at data
+glimpse(df)
+
+# for data with this many variables, sometimes just `names()` is useful
+names(df)
+
+# similar tidyverse functions: read_csv(2), write_csv, read_delim, read_stata, write_dta
+```
+
+- Notice that I use # and comment my code as I go
+- I use a header to explain what the script does > you will use this and others who look at your code will use this
+- Rather than trying to remember what you did, you want to keep your `R` script clean and well commented! This helps future you AND it helps with replication if others are looking at your code!
+
+- Full disclosure: I nearly always do this in a .Rmd, not an `R` script. The process is largely the same, but there are a few differences (e.g. load all packages in one of your first chuncks).
+
+-------------------------
+# A couple notes on style 
+-------------------------
+
+# Naming your files
+
+- Do name your r-script `data_clean_project_name.R` and put it in the appropriate folder in your working directory or `R` project. DO name your data `anes_pilot_2016.dta` and save it in the appropriate folder in your working directory.
+
+- Do NOT name it 'Clean Data 2.R' This gets messy when reading the file back in. You will have errors. Always get in the habit of using `_` to join words in folders, datasets, scripts, etc.
+
+# Spacing and line wrap
+
+- Always good to leave spaces in code. It is easier to read and easier to understand. There is a tidyverse specific style guide that covers this: `https://style.tidyverse.org/`
+
+```{r spacing-note}
+my_var <- 5 #is easier to read than
+my_var<-5
+
+## Tip: use hot keys
+# "option" + "-" (minus sign) will get you this assignment operator on a mac.
+# For Windows/Linux, "Alt" + "-"
+```
+
+`rm(list=ls())`
+
+- This clears your workspace. Some people think it's good practice. Others think the opposite. See `https://www.tidyverse.org/articles/2017/12/workflow-vs-script/`. They recommend:
+
+* Daily work habit: Restart R very often and re-run your under-development script from the top.
+  * If you use `RStudio`, use the menu item *Session > Restart R* or the associated keyboard shortcut "Ctrl+Shift+F10" (Windows and Linux) or "Command+Shift+F10" (Mac OS). You can re-run all code up to the current line with "Ctrl+Alt+B" (Windows and Linux) or "Command+Option+B" (Mac OS).
+  * If you run R from the shell, use Ctrl+D to quit, then R to restart.
+
+
+```{r load-csv}
+# Using `read_csv()`, load 'cleaned_anes_2016_r_course.csv' from this URL
+df <- read_csv('https://raw.githubusercontent.com/cziolk01/ps200e/master/cleaned_anes_2016_r_course.csv') %>% 
+  dplyr::select(-X1) # Here we're dropping the first column because it's garbage
+
+# Have a look
+df
+glimpse(df)
+```
+
+There is a lot more to know about importing data. Most of the time you won't need to use more than `read_csv()` and the other basic function. You often won't need to use the functions arguments beyond providing the file you're importing. But sometimes you will run into problems. This data importing cheat sheet can help `https://github.com/rstudio/cheatsheets/raw/master/data-import.pdf`. 
+
+When working with Excel spreadsheets, the `readxl` and `writexl` packages can be very useful. 
+* `https://readxl.tidyverse.org/`
+* `https://cran.r-project.org/web/packages/writexl/writexl.pdf`
+
+--------------------------
+# dplyr, ggplot, and tidyr
+--------------------------
+
+One of the most important things to be able to do quickly and effortlessly is summarize your data. You want to know if those who are high in racial resentment feel more negatively towards Obama than those who are low in racial resentment. You might have a dataset where you have population per county per state but you want statewide population, so you have to combine counties by state. You might want to figure out which continent has the highest GDP per capita but only have country level data. 
+
+Here I introduce you to some handy functions in the `dplyr` package that help you easily calculate these quantities of interest. We will also use `ggplot` to help us look at some of our results. We will briefly touch on a couple `tidyr` functions in the process. 
+
+Remember that any package is just a collection of functions already coded up for you. `dplyr` is build around 5 core functions:
+
+- `select()`: this function subsets your dataset to just the columns of data (variables you want)
+
+The base R equivalent would simply be `df[,c(vars of interest)]`
+
+- `filter()`: this function subsets the data into just the rows you want to look at
+
+The base R equivalent would be `subset()` or simply `df[c(rows),]`
+
+- `arrange()`: this function sorts the data by row(s) of your choosing
+
+The base R equivalent is `sort()`
+
+- `mutate()`: this function adds new variables to your dataframe
+
+The base R equivalent is simply `df$newvar` or `df[,'newvar']`
+
+- `summarise()`: this function allows you to summarise your data in someway; usually used in conjunction with group_by() which allows you to summarise data by some other variable.
+
+This last one is not a core function but it is super useful:
+
+- `group_by()`: this function groups your data according to a variable you give it. 
+
+Before we get to examples with each function let's look at the pipe operator
+
+
+# Meet the pipe operator
+
+One of the cool things about `dplyr()` is the pipe operator `%>%` which you have seen above. It helps make your code nice and easy to read, moving us away from base R nesting doll syntax and into something that reads more fluidly:
+
+```{r pipe-basic}
+df %>% tail()
+tail(df)
+
+# mac hot key: command + shift + m
+# pc hot key: shift + alt + m (I think... maybe sub 'ctrl' for 'alt')
+```
+
+What is the pipe actually doing? Taking the first argument and passing it to the first argument in the following function:
+
+```{r pipe-working}
+# this reads take my dataframe called df and show me the last 10 rows of it using head()
+df %>% tail(10)
+
+# it is the same as
+tail(df, 10)
+```
+
+Whenever you see the pipe, say the words "then" in your head.
+
+```{r pipe-then}
+foo <- df[df$race %in% c(1,2),c('republican_pid7','conservative')]
+head(foo,10)
+
+df %>%
+  filter(race %in% c(1, 2)) %>%
+  dplyr::select(republican_pid7, conservative)
+```
+
+This reads: take my dataset called df, then filter by race to only white and black respondents, then select just two variables of interest, partisanship and ideology.
+
+--------
+# Select
+--------
+
+Say you want to look at just certain variables. 
+
+```{r select-basic}
+df %>% 
+  dplyr::select(income_family)
+```
+
+NOTE: Depending on which packages you have installed, you may need to put `dplyr::` in front of the `select()` function so it knows that you want the `dplyr` `select()` function, not some other `select()` function.
+
+This is the same as in base `R`:
+
+```{r select-base}
+df[,'income_family']
+
+# but not the same as this...
+df$income_family
+```
+
+You can select more than one variable
+
+```{r select-multiple}
+df %>% 
+  select(income_family, race)
+```
+
+Or some sequence of variables
+
+```{r select-sequence}
+df %>% 
+  select(rr1rc:rr4rc)
+```
+
+You can get rid of variables you don't want, too.
+
+```{r de-select}
+#create a sample dataframe with just two variables, rubio thermometer and race.
+(samp <- df %>% 
+  select(therm_rubio,race))
+
+#now use the minus sign to get rid of one of the two variables
+samp %>%
+  select(-therm_rubio)
+```
+
+You can also select variables that contain certain strings
+
+```{r select-contains}
+df %>% 
+  select(dplyr::contains('therm'))
+```
+
+Variables that start with some character string
+
+```{r select-starts-with}
+df %>%
+  select(starts_with('rr')) 
+```
+
+Now for a small exercise. First using base R, then using dplyr, create a tibble composed of the columns that contain "obama"
+
+```{r exercise-select-obama}
+
+```
+
+How about selecting all the variables that end with "timing"? How would you do this in `dplyr`? In base `R`?
+
+```{r exercise-select-timing}
+
+```
+
+
+--------
+# Filter
+--------
+ 
+`filter()` allows you to subset by rows.
+
+Let's say you want to look at some patterns in the data among just white respondents.
+
+One way would be to create smaller dataframes that contain subsections of the data:
+
+```{r subsetting-data}
+#using base R, you can do this by using the subset function
+white_respondents <- subset(df, race == 1)
+nrow(white_respondents)
+
+#or you can use brackets
+white_respondents <- df[df$race==1,]
+#this above reads, take my dataframe and subset it to just the rows where race == 1
+nrow(white_respondents) 
+```
+
+But making extra dataframes isn't great practice. 
+
+You can save yourself from having to make an extra dataframe by subsetting the data within the function calls. This will save you mistakes. Let's say you want to look at mean thermometer ratings among whites.
+
+A better way is to subset the data within the function, as noted above:
+
+```{r nested-subsetting}
+mean(df$therm_obama[df$white==1], na.rm=T)
+```
+
+Notice that this approach doesn't create a new dataframe that will clutter your workspace.
+
+You can use this subset within any function. Want to regress Obama feeling thermometer on partisanship for just whites? Easy, subset in the `lm()` function.
+
+```{r more-nested-subsets}
+summary(lm(therm_obama ~ republican_pid7, data = df[df$race==1,], weights = weight)) 
+# notice how subset is within the function itself
+
+# I guess this is more tidyverse-esque?
+df %>% 
+  filter(race == 1) %>% 
+  lm(formula = therm_obama ~ republican_pid7, 
+     weights = weight) %>% 
+  summary()
+
+# We can use the broom package to get a tidy summary
+library(broom)
+df %>% 
+  filter(race == 1) %>% 
+  lm(formula = therm_obama ~ republican_pid7, 
+     weights = weight) %>% 
+  tidy() # This can be applied to (almost) any model object
+
+# And we can use estimatr to get Huber-White standard errors when we're not using clustered standard errors--don't worry about the details; this is a preview of things to come.
+# install.packages("estimatr", dependencies = TRUE,
+#                  repos = c("http://r.declaredesign.org", 
+#                            "https://cloud.r-project.org")) # I needed to get the latest version for it to work. 
+library(estimatr)
+
+df %>% 
+  filter(race == 1) %>% 
+  lm_robust(formula = therm_obama ~ republican_pid7, 
+     weights = weight) %>% 
+  tidy() %>% 
+  as_tibble() 
+
+# lm_robust easily calculates robust clustered standard errors, too
+df %>% 
+  filter(race == 1) %>% 
+  lm_robust(formula = therm_obama ~ republican_pid7 + as.factor(educ), 
+     weights = weight,
+     clusters = as.factor(educ)) %>% 
+  tidy() %>% 
+  as_tibble() 
+```
+
+You can easily add multiple conditions and you don't need to quote column names or use `$`. How would you return a tibble of just white ('race' is 1), college-educated ('educ' is at least 5), republican ('pid7' is 5 or more) respondents?
+
+```{r exercise-filter}
+
+```
+
+Notice above that you can use inequalities in the `filter()` argument.
+
+---------
+# Arrange
+---------
+
+Dplyr has an `arrange()` function to order the data. This is more useful when you have continuous variables with large numbers of values and you want to look at the extremes. This is super useful when you have country data and want to know which country has the highest or lowest of X variable.
+
+For this example I'm going to use the gapminder country data, which is more appropriate for this example
+
+```{r load-gapminder}
+install.packages('gapminder')
+library(gapminder) # Install the package if you need it. In a regular .Rmd I would have already loaded this package.
+glimpse(gapminder)
+```
+
+Say you want to look at which country has the highest life expectancy:
+
+```{r arange-lifeExp}
+gapminder %>%
+  arrange(desc(lifeExp)) %>%
+  select(country,lifeExp,year)
+```
+
+Okay, great, Japan. But notice this data is arranged by country-year. That doesn't makes sense. Let's just look at highest life expectancy in the latest year in the data.
+
+```{r arrange-latest-year}
+gapminder %>%
+  filter(year == (max_y <- max(gapminder$year))) %>%
+  arrange(desc(lifeExp))
+```
+
+You can arrange by several variables, too. Let's say we want to arrange by year and gdpPercap. How would you do this?
+
+```{r exercise-multiple-arrange}
+
+```
+
+What if we want to arrange it by continent and gdpPercap? We could do this for 2007.
+
+```{r}
+#or by continent
+gapminder %>%
+  filter(year == 2007) %>%
+  arrange(desc(continent), desc(gdpPercap)) %>%
+  dplyr::select(year, continent, gdpPercap) 
+
+
+# what do you do if you want to see more that 10 rows with a tibble?
+```
+
+
+--------
+# Mutate
+--------
+
+Use `mutate()` to add new variables (columns) to your dataframe. 
+
+-------------------
+# ggplot interlude!
+-------------------
+
+Before we dive into `mutate()`, we're first going to look at a variable that we might want to transform. This will serve as a refresher on `ggplot`.
+
+`ggplot` is a good way to make really nice looking plots in `R`. The learning curve is the type where it's no fun at first. But you have a lot of flexibility and can change and tweak things easily once you get the hang of it.
+
+Our first step is to set the default data and mapping. We can think of this as a base layer of our plot. Because it is. 
+
+```{r}
+g <- ggplot(data = gapminder, mapping = aes(x = pop))
+
+# What did we just do? We created a blank ggplot, specifying the x-axis.
+g
+```
+
+We build on this base with `geom`s (and some other things). There are tons of geometric objects ggplot will produce. Check out the cheat sheet below for a good overview. 
+
+```{r}
+# We can combine this base layer with different layers using "+". A histogram is one good way to look at this.
+g + geom_histogram()
+g + geom_histogram(bins = 300) 
+```
+
+There are other `geom`s we might use to examine skewness.
+
+```{r}
+# density and boxplot come to mind
+g + geom_density() 
+g + geom_boxplot(aes(x = '', y = pop)) # For geom_boxplot, we need to provide an "x" and "y" value to the aesthetics mapping (`aes()`). Here, notice, we leave x blank--we only have one group. We are altering the aesthetic mapping for the boxplot layer.
+```
+
+Can we add more than one layer? There's no limit to the layers we can add!
+
+```{r}
+# We can add additional layers, again using "+"
+g + geom_histogram() + 
+  theme_light() + # Add a theme
+  ggtitle('Population histogram') + # Add a title
+  xlab('Population') + # Change x and y labels
+  ylab('Count')
+
+# We might want to use the boxplot to visualize the distribution across groups
+g + geom_boxplot(aes(x = continent, y = pop)) +
+  theme_minimal() +
+  coord_flip()
+```
+
+So, the point of using `ggplot`, here, was to see if "pop" is skewed. It is.
+
+```{r}
+# So it makes sense to try logging it
+gapminder$log_pop <- log(gapminder$pop)
+
+# We can see the results - again ggplot
+g <- ggplot(gapminder, aes(x = log_pop))
+
+g + geom_histogram()
+g + geom_density() 
+g + geom_boxplot(aes(x = continent, y = log_pop)) # Now it looks fairly normal
+
+# If we wanted to see the different density plots for different continents, we can also do this easily in ggplot
+g + geom_density(
+  aes(fill = continent, alpha = .5)
+  ) +
+  theme_bw()
+
+# Facet wrap is perhaps cleaner. 
+g + geom_density() +
+  theme_bw() + 
+  facet_wrap(~ continent)
+```
+
+Back to `mutate()`. You can create a logged variable quite easily in `dplyr`, too:
+
+```{r}
+library(magrittr)
+gapminder %<>% # I guess Hadley doesn't like this. It's an in-place assignment operator. 
+  # same as gapminder <- gapminder %>% ...
+  mutate(log_pop = log(pop)) %>% 
+  glimpse
+```
+
+And in fact, `dplyr` makes it easy to make a whole bunch of new variables
+
+```{r}
+gapminder %>%
+  mutate(log_pop = log(pop),
+         lifeExp_squared = lifeExp^2,
+         pop_div = pop/100,
+         new_var = pop) %>% 
+  glimpse()
+```
+
+You can even manipulate variables you create within the same function call:
+
+```{r}
+gapminder %>%
+  mutate(log_pop = log(pop),
+         lifeExp_squared = lifeExp^2,
+         lifeExp_squared2 = lifeExp_squared/100) %>% 
+  glimpse() # notice that this one takes the variable created in the line above
+
+# You can also apply a function to all your vars at once
+gapminder %>% 
+  mutate_all(.funs =  ~ as.character(.))
+
+# Conditional mutation
+gapminder %>% mutate_if(is.numeric, log)
+
+# Multiple conditional mutations
+gapminder %>% 
+  mutate_if(is.numeric, list(~log(.), ~exp(.), ~.^2)) %>% 
+  glimpse()
+
+# Rename
+gapminder %>% 
+  mutate_if(is.numeric, list(~log(.), ~exp(.), ~.^2)) %>% 
+  rename_at(vars(ends_with("^")), 
+            ~paste0(substring(., 1, nchar(.)-1), "sq")) %>% 
+  glimpse()
+
+# There's quite a bit going on there, but learning things like this can save a lot of time
+```
+
+These functions all useful when you want to look at trends in data. Here I am going to use `dplyr` and `ggplot` to show change in logged population by continent over time
+
+```{r}
+gapminder %>%
+  mutate(log_pop = log(pop)) %>%
+  group_by(continent, year) %>%
+  summarise(median_log_pop = median(log_pop, na.rm=T)) %>% 
+  ggplot(aes(x = year, y = median_log_pop, color = continent)) -> base_layer # What just happened?
+base_layer + geom_line() + # We're adding a line plot to the base layer
+  theme_bw()
+
+# Previously, our mapping had only 1 dimension. Now we have two. What does just the base layer look like?
+base_layer
+```
+
+We can alternatively use facets to differentiate between continents
+
+```{r}
+gapminder %>%
+  mutate(log_pop = log(pop)) %>%
+  group_by(continent, year) %>%
+  summarise(median_log_pop = median(log_pop, na.rm=T)) %>%
+  ggplot(aes(year, median_log_pop)) + 
+  geom_line() +
+  facet_wrap(~ continent) + # This will give each continent it's own facet
+  theme_bw()
+```
+
+-----------
+# Summarize
+-----------
+
+`summarize()` does what it sounds like it does (as the previous two plots may have revealed).
+
+`group_by()` lets you do computation within groups. Say you want to take the mean rating towards Obama by each level of partisanship with confidence intervals on the mean estimate.
+
+```{r}
+(pid7_obama <- df %>% 
+  group_by(republican_pid7) %>% 
+  summarise(mean_ft_obama = weighted.mean(therm_obama, wt=weight, na.rm=T),
+            lower = mean_ft_obama - 1.96*sd(therm_obama,na.rm=T)/sqrt(n()-1),
+            upper = mean_ft_obama + 1.96*sd(therm_obama,na.rm=T)/sqrt(n()-1)) %>% 
+  round(2) %>%
+  na.omit())
+```
+
+Let's plot it. 
+
+```{r}
+ggplot(pid7_obama, aes(x=republican_pid7, y=mean_ft_obama)) + 
+  geom_point() + 
+  geom_segment(aes(x=republican_pid7, xend=republican_pid7, y=lower, yend=upper)) + # We specify the beginning and ending points for each dimension
+  labs(x='', y='Mean Obama Feeling Therm') +
+  scale_x_continuous(breaks=1:7, 
+                     labels=c('Strong D','Weak D','Lean D',
+                              'Independent',
+                              'Lean R','Weak R','Strong R')) +
+  theme_bw() + 
+  coord_flip()
+
+# I prefer using geom_errorbar
+ggplot(pid7_obama, aes(x=republican_pid7, y=mean_ft_obama)) + 
+  geom_point() + 
+  geom_errorbar(aes(ymin=lower, ymax=upper), width = .04) + # Here we only need specify the y dimension extents
+  labs(x='', y='Mean Obama Feeling Therm') +
+  scale_x_continuous(breaks=1:7, 
+                     labels=c('Strong D','Weak D','Lean D',
+                              'Independent',
+                              'Lean R','Weak R','Strong R')) +
+  theme_bw() + 
+  coord_flip()
+```
+
+You can add multiple commands to the same summarise function, as I did above.
+
+```{r}
+(fp <- df %>% 
+  group_by(pid7) %>%
+  summarise(obama = mean(therm_obama, na.rm=T),
+            rubio = mean(therm_rubio, na.rm=T),
+            difference=obama-rubio) %>%
+  na.omit())
+
+# Plot it
+ggplot(fp, aes(x=pid7, y=difference)) + 
+  geom_line() +
+  labs(x='Republican PID7', y='Mean Obama Minus Rubio Therm') +
+  geom_hline(yintercept=0, color='red', linetype=2) +
+  theme_bw()
+```
+
+You can also subset data further within the `summarize` function. Let's say, for example, you wanted to look at Obama thermometer ratings for each level of partisanship but split out among blacks and whites separately. Rather than grouping by race variable, you can subset within summarise.
+
+```{r}
+df %>% 
+  group_by(pid7) %>%
+  summarise(obama_whites = mean(therm_obama[race==1], na.rm=T),
+            obama_blacks = mean(therm_obama[race==2], na.rm=T)) %>%
+  na.omit()
+
+# Tidyverse fidelity seems long, and we need to use something like `spread()`
+df %>% 
+  filter(race %in% c(1, 2)) %>% 
+  mutate(race = ifelse(race == 1, 'white', 'black')) %>% 
+  group_by(pid7, race) %>%
+  summarise(obama_race = mean(therm_obama, na.rm=T)) %>%
+  spread(key = race, value = obama_race)  %>%  # `key` refers to the column that will provide the new column names, while `value` is the column where the values for these new variables (defined by `key`) will come from
+  filter(!is.na(pid7))
+
+# I personally think pivot_wider(), in the tidyr development package, is easier. 
+## You could try installing it now. But it might want you to restart `R`/RStudio. 
+# install.packages("remotes")
+# remotes::install_github("tidyverse/tidyr") 
+df %>% 
+  filter(race %in% c(1, 2)) %>% 
+  mutate(race = ifelse(race == 1, 'white', 'black')) %>% 
+  group_by(pid7, race) %>%
+  summarise(obama_race = mean(therm_obama, na.rm=T)) %>%
+  pivot_wider(id_cols = pid7, names_from = race, values_from = obama_race)  %>% # `names_from` = `key`. `values_from` = `value`. Now we also have `id_cols`, which allows us to explicitly declare that, in this case, `race` will determine the unit of analysis. This coheres well with the concept of tidy data.
+  filter(!is.na(pid7))
+
+# This is still quite long.
+
+# But scales up quickly
+df %>% 
+  group_by(pid7, race) %>%
+  summarise(obama_race = mean(therm_obama, na.rm=T)) %>% 
+  filter(!is.na(pid7)) %>%
+  pivot_wider(names_from = race, values_from = obama_race) 
+```
+
+Keeping in mind the idea of tidy data (each row is an observation, each column a variable), say we now want to look at Obama thermometer ratings by race, but not broken out by partisan ID. This is very similar to what we just did, except now we want the unit of analysis (that is, our rows) to be race and partisan ID to be the columns. How can you do this? Hint: use `filter`, `group_by`, `summarize`, and either `spread` or `pivot_wider`.
+
+```{r exercise-spread-pivot-wider}
+ 
+```
+
+Now, what if you wanted to plot these results with ggplot? More specifically, plot how the Obama thermometer measure changes across different levels of partisan ID by race. Differentiate race by using a `linetype` argument passed to `geom_line()` or by using a `facet_wrap()`. I've made the data for you to plot. 
+
+```{r exercise-line-plot}
+pdat <- df %>% 
+  filter(race >= 1, race <= 4) %>% # subsetting to remove empty cells
+  group_by(pid7, race) %>%
+  summarise(obama_race = mean(therm_obama, na.rm=T)) %>% 
+  filter(!is.na(pid7)) # removing respondents without partisan ID
+
+
+```
+
+`summarise_all()` will provide the same call for each variable in the dataframe that you want. Say, for example, you have a datset of numerical values for counties in the US and you want summaries of those values by state.
+
+```{r}
+gapminder %>% 
+  filter(year == 2007) %>% 
+  select(lifeExp,pop,gdpPercap) %>%
+  summarise_all(.funs = list(mean,median))
+```
+
+# Exercise combining everything you did above
+
+Using the gapminder data, figure out what the mean life expectancy is by continent in 1997 
+
+```{r exercise-life-exp-by-continent}
+
+```
+
+How about the mean logged population across all countries by year 
+
+```{r exercise-mean-logged-population-by-year}
+
+```
+
+How about the gdpPercap over time in just Vietnam?
+
+```{r exercise-vietnam-gdp}
+
+```
+
+Find the mean and median of logged pop in Asia between 1962 and 1967
+
+```{r exercise-mean-median-l-pop-asia}
+
+```
+
+Here is a `dplyr`/data transformation cheat sheet to refer back to when you have questions: `https://github.com/rstudio/cheatsheets/raw/master/data-transformation.pdf`
+
+Likewise there is a `ggplot` cheat sheet: 
+`https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf`
+
+There are many other cheat sheets available at `https://www.rstudio.com/resources/cheatsheets/`. In particular, the following could be useful: 
+* `stringr` will help you work with strings in `R`. There are some high start up costs here, but the payoffs are also potentially large. `https://github.com/rstudio/cheatsheets/raw/master/strings.pdf`.
+* `lubridate` will help you when working with times and dates. `https://github.com/rstudio/cheatsheets/raw/master/lubridate.pdf`.
+
